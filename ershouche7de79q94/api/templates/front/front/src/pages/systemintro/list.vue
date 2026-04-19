@@ -1,0 +1,223 @@
+<template>
+	<div class="front-page">
+		<div v-if="centerType" class="back_box">
+			<el-button class="backBtn" size="mini" @click="backClick">返回</el-button>
+		</div>
+
+		<header class="front-page-header">
+			<div class="front-page-header__title">
+				<span class="front-pill">System Story</span>
+				<h1>系统简介</h1>
+				<p>把原来偏生成器风格的简介列表，改成更接近内容展示页的图文编排，让信息密度更舒服。</p>
+			</div>
+			<div class="front-page-header__meta">
+				<span class="front-pill">共 {{ total }} 条内容</span>
+			</div>
+		</header>
+
+		<section class="front-toolbar">
+			<div class="front-toolbar__group">
+				<el-button v-if="btnAuth('systemintro','新增')" type="primary" @click="add('/index/systemintroAdd')">新增简介</el-button>
+			</div>
+			<div class="front-toolbar__hint">通过更轻的图文卡片浏览平台定位、业务能力与系统说明。</div>
+		</section>
+
+		<section class="front-section">
+			<div v-if="dataList.length" class="front-article-list">
+				<article v-for="(item, index) in dataList" :key="index" class="front-article-card front-clickable" @click="toDetail(item)">
+					<div class="front-article-card__media">
+						<img
+							:src="item.picture1 ? (item.picture1.substring(0,4)=='http' ? (item.picture1.split(',w').length>1 ? item.picture1 : item.picture1.split(',')[0]) : baseUrl + item.picture1.split(',')[0]) : (item.picture2 ? (item.picture2.substring(0,4)=='http' ? (item.picture2.split(',w').length>1 ? item.picture2 : item.picture2.split(',')[0]) : baseUrl + item.picture2.split(',')[0]) : (item.picture3 ? (item.picture3.substring(0,4)=='http' ? (item.picture3.split(',w').length>1 ? item.picture3 : item.picture3.split(',')[0]) : baseUrl + item.picture3.split(',')[0]) : require('@/assets/chapter.jpg')))"
+							alt="system intro"
+						>
+					</div>
+					<div>
+						<div class="front-article-card__meta">Platform Overview</div>
+						<h3>{{ item.title || '系统简介' }}</h3>
+						<p>{{ item.subtitle || '查看图文详情，了解平台核心能力、数据来源和业务流程。' }}</p>
+						<div class="front-article-card__footer">
+							<span>{{ item.picture1 ? '图文内容已配置' : '纯文本内容' }}</span>
+							<span>点击查看详情</span>
+						</div>
+					</div>
+				</article>
+			</div>
+			<div v-else class="front-empty">暂无系统简介内容</div>
+
+			<el-pagination
+				background
+				id="pagination"
+				class="pagination"
+				:pager-count="7"
+				:page-size="pageSize"
+				prev-text="<"
+				next-text=">"
+				:hide-on-single-page="true"
+				:layout='["total","prev","pager","next","sizes","jumper"].join()'
+				:total="total"
+				:page-sizes="pageSizes"
+				@current-change="curChange"
+				@size-change="sizeChange"
+				@prev-click="prevClick"
+				@next-click="nextClick"
+			></el-pagination>
+		</section>
+
+		<el-dialog title="预览图" :visible.sync="previewVisible" width="50%">
+			<img :src="previewImg" alt="" style="width: 100%;">
+		</el-dialog>
+	</div>
+</template>
+
+<script>
+	import axios from 'axios';
+	export default {
+		//数据集合
+		data() {
+			return {
+				layouts: '',
+				swiperIndex: -1,
+				baseUrl: '',
+				breadcrumbItem: [
+					{
+						name: '系统简介'
+					}
+				],
+				formSearch: {
+				},
+				fenlei: [],
+				dataList: [],
+				total: 1,
+				pageSize: 12,
+				pageSizes: [],
+				totalPage: 1,
+				curFenlei: '全部',
+				isPlain: false,
+				indexQueryCondition: '',
+				timeRange: [],
+				centerType:false,
+				previewImg: '',
+				previewVisible: false,
+				sortType: 'id',
+				sortOrder: 'desc',
+			}
+		},
+		async created() {
+			if(this.$route.query.centerType&&this.$route.query.centerType!=0){
+				this.centerType = true
+			}
+			this.baseUrl = this.$config.baseUrl;
+			if(this.centerType) {
+			}
+			await this.getFenlei();
+			this.getList(1, '全部');
+		},
+		watch:{
+			$route(newValue){
+				this.getList(1, newValue.query.homeFenlei);
+			}
+		},
+		computed: {
+			role(){
+				return localStorage.getItem('frontRole');
+			},
+			username() {
+				return localStorage.getItem('username')
+			}
+		},
+		//方法集合
+		methods: {
+			queryChange(arr){
+				for(let x in arr) {
+					if(arr[x] == this.role) {
+						return true
+					}
+				}
+				return false
+			},
+			add(path) {
+				let query = {}
+				if(this.centerType){
+					query.centerType = 1
+				}
+				this.$router.push({path: path,query:query});
+			},
+			async getFenlei() {
+			},
+			getList(page, fenlei, ref = '') {
+				let params = {
+					page,
+					limit: this.pageSize,
+				};
+				let searchWhere = {};
+				let user = JSON.parse(localStorage.getItem('sessionForm'))
+				if (this.sortType) searchWhere.sort = this.sortType
+				if (this.sortOrder) searchWhere.order = this.sortOrder
+				this.$http.get(`systemintro/${this.centerType?'page':'list'}`, {params: Object.assign(params, searchWhere)}).then(res => {
+					if (res.data.code == 0) {
+						this.dataList = res.data.data.list;
+						this.total = Number(res.data.data.total);
+						this.pageSize = Number(res.data.data.pageSize);
+						this.totalPage = res.data.data.totalPage;
+						if(this.pageSizes.length==0){
+							this.pageSizes = [this.pageSize, this.pageSize*2, this.pageSize*3, this.pageSize*5];
+						}
+					}
+				});
+			},
+			sortClick(type){
+				if(this.sortType==type){
+					if(this.sortOrder == 'desc'){
+						this.sortOrder = 'asc'
+					}else{
+						this.sortOrder = 'desc'
+					}
+				}else{
+					this.sortType = type
+					this.sortOrder = 'desc'
+				}
+				this.getList(1, '全部')
+			},
+			curChange(page) {
+				this.getList(page);
+			},
+			prevClick(page) {
+				this.getList(page);
+			},
+			sizeChange(size){
+				this.pageSize = size
+				this.getList(1);
+			},
+			nextClick(page) {
+				this.getList(page);
+			},
+			imgPreView(url){
+				this.previewImg = url
+				this.previewVisible = true
+			},
+			toDetail(item) {
+				let params = {
+					id: item.id
+				}
+				if(this.centerType){
+					params.centerType = 1
+				}
+				this.$router.push({path: '/index/systemintroDetail', query: params});
+			},
+			btnAuth(tableName,key){
+				if(this.centerType){
+					return this.isBackAuth(tableName,key)
+				}else{
+					return this.isAuth(tableName,key)
+				}
+			},
+			backClick() {
+				this.$router.push({path: '/index/center'});
+			},
+
+		}
+	}
+</script>
+
+<style lang="scss" scoped>
+</style>

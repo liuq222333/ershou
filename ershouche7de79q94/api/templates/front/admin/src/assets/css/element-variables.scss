@@ -1,0 +1,10 @@
+/* 改变主题色变量 */
+$--color-primary: #1f8f63 !default;
+$--color-success: #38a169 !default;
+$--color-warning: #d4a047 !default;
+$--color-danger: #c35a4b !default;
+$--color-info: #7a838f !default;
+$--border-radius-base: 12px !default;
+$--font-path: '~element-ui/lib/theme-chalk/fonts';
+
+@import "~element-ui/packages/theme-chalk/src/index";

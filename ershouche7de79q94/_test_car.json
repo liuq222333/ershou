@@ -1,0 +1,41 @@
+{
+  "authentication_method": "非官方认证",
+  "brand_id": 2,
+  "brand_name": "奥迪",
+  "brand_source_city_name": "北京",
+  "car_age": "",
+  "car_id": 36184,
+  "car_mileage": "",
+  "car_name": "55 quattro 时尚型",
+  "car_source_city_name": "北京",
+  "car_source_type": "自营",
+  "car_year": 2019,
+  "group_id": 0,
+  "group_id_str": "0",
+  "image": "https://p3-dcd-sign.byteimg.com/tos-cn-i-f042mdwyw7/d31acda93e7742efb7f27b2e3e238ed2~tplv-f042mdwyw7-auto-webp:480:0.jpg?rk3s=4892dee6&x-expires=1777733012&x-signature=1%2Bvbl0eQ09JJnGSQY5wBWWQQ7ns%3D&psm=motor.sh.pack",
+  "is_self_trade": false,
+  "is_video": false,
+  "official_hint_bar": "",
+  "official_price": ".",
+  "platform_type": 0,
+  "related_video_thumb": "",
+  "series_id": 2102,
+  "series_name": "奥迪e-tron(进口)",
+  "sh_price": ".",
+  "shop_id": "84514",
+  "sku_id": 23100321,
+  "special_tags": null,
+  "spu_id": 22532256,
+  "sub_title": " | .",
+  "tags": [
+    {
+      "background_color": "rgba(179,125,18,0.1)",
+      "logo": "https://p3.dcarimg.com/img/tos-cn-i-dcdx/5f0015d5e1ee4547b51bc7544a06765c~noop.image",
+      "text": "检测报告",
+      "text_color": "rgba(179,125,18,1)"
+    }
+  ],
+  "tags_v2": null,
+  "title": "奥迪e-tron(进口) 2019款 55 quattro 时尚型",
+  "transfer_cnt": 1
+}
